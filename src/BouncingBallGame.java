@@ -1,6 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.net.URL;
 
 public class BouncingBallGame extends JFrame {
 
@@ -17,7 +20,7 @@ public class BouncingBallGame extends JFrame {
     private int ballSpeedY = BALL_SPEED;
 
     private int barX = (BOARD_WIDTH - BAR_WIDTH) / 2;
-    private int barY = BOARD_HEIGHT - BAR_HEIGHT - 20;
+    private int barY = BOARD_HEIGHT - BAR_HEIGHT - 50; // Raised the bar position
 
     private int hits = 0;
 
@@ -92,8 +95,16 @@ public class BouncingBallGame extends JFrame {
     }
 
     private Image getBackgroundImage() {
-        ImageIcon imageIcon = new ImageIcon("https://i.pinimg.com/736x/df/6d/9b/df6d9b173e3e4b0521d5134548f3e4a5.jpg");
-        return imageIcon.getImage();
+        try {
+            // Load the image using ImageIO for synchronous loading
+            URL imageURL = new URL("https://i.ibb.co/hLbrgbf/images-jpeg.jpg");
+            BufferedImage bufferedImage = ImageIO.read(imageURL);
+
+            return bufferedImage;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private void drawBall(Graphics g) {
