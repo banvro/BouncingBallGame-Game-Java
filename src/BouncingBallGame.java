@@ -1,9 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.net.URL;
+
 
 public class BouncingBallGame extends JFrame {
 
@@ -20,7 +22,7 @@ public class BouncingBallGame extends JFrame {
     private int ballSpeedY = BALL_SPEED;
 
     private int barX = (BOARD_WIDTH - BAR_WIDTH) / 2;
-    private int barY = BOARD_HEIGHT - BAR_HEIGHT - 50; // Raised the bar position
+    private int barY = BOARD_HEIGHT - BAR_HEIGHT - 117; // Raised the bar position
 
     private int hits = 0;
 
@@ -94,26 +96,37 @@ public class BouncingBallGame extends JFrame {
         g.drawImage(getBackgroundImage(), 0, 0, BOARD_WIDTH, BOARD_HEIGHT, null);
     }
 
+//    private Image getBackgroundImage() {
+//        try {
+//            // Load the image using ImageIO for synchronous loading
+//            URL imageURL = new URL("https://i.ibb.co/hLbrgbf/images-jpeg.jpg");
+//            BufferedImage bufferedImage = ImageIO.read(imageURL);
+//
+//            return bufferedImage;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+
     private Image getBackgroundImage() {
         try {
             // Load the image using ImageIO for synchronous loading
-            URL imageURL = new URL("https://i.ibb.co/hLbrgbf/images-jpeg.jpg");
-            BufferedImage bufferedImage = ImageIO.read(imageURL);
-
+            BufferedImage bufferedImage = ImageIO.read(new File("images.jpg"));
             return bufferedImage;
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
     }
 
     private void drawBall(Graphics g) {
-        g.setColor(Color.RED);
+        g.setColor(Color.BLACK);
         g.fillOval(ballX, ballY, BALL_SIZE, BALL_SIZE);
     }
 
     private void drawBar(Graphics g) {
-        g.setColor(Color.BLUE);
+        g.setColor(Color.BLACK);
         g.fillRect(barX, barY, BAR_WIDTH, BAR_HEIGHT);
     }
 
