@@ -36,7 +36,7 @@ public class BouncingBallGame extends JFrame {
     private List<Point> lines = new ArrayList<>();
 
     public BouncingBallGame() {
-        setTitle("Bouncing Ball Game");
+        setTitle("ProgrammingProject");
 
         // Set the preferred size of the content pane
         JPanel contentPane = new JPanel() {
@@ -131,30 +131,31 @@ public class BouncingBallGame extends JFrame {
 
     private void drawStaticTexts(Graphics g) {
         g.setColor(Color.BLUE);
-        Font font = new Font("Calibri", Font.TRUETYPE_FONT, 30);
+        Font font = new Font("sans-serif", Font.TRUETYPE_FONT, 23);
         g.setFont(font);
 
         // Display each statistic on a new line
-        g.drawString("Missed", 20, BOARD_HEIGHT - 2 * LINE_HEIGHT);
-        g.drawString(Integer.toString(missed), 50, BOARD_HEIGHT - LINE_HEIGHT);
+        g.drawString("Missed", 48, BOARD_HEIGHT - 2 * LINE_HEIGHT + 11);
+        g.drawString(Integer.toString(missed), 70, BOARD_HEIGHT - LINE_HEIGHT + 11); // Maintained the same difference
 
         g.setColor(Color.RED);
-        g.drawString("Hits", BOARD_WIDTH / 2 - 40, BOARD_HEIGHT - 2 * LINE_HEIGHT);
-        g.drawString(Integer.toString(hits), BOARD_WIDTH / 2 - 25, BOARD_HEIGHT - LINE_HEIGHT);
+        g.drawString("Hits", BOARD_WIDTH / 2 - 40, BOARD_HEIGHT - 2 * LINE_HEIGHT + 11);
+        g.drawString(Integer.toString(hits), BOARD_WIDTH / 2 - 25, BOARD_HEIGHT - LINE_HEIGHT + 11); // Maintained the same difference
 
         g.setColor(Color.BLACK);
-        g.drawString("Score", BOARD_WIDTH - 120, BOARD_HEIGHT - 2 * LINE_HEIGHT);
-        g.drawString(Integer.toString(score), BOARD_WIDTH - 100, BOARD_HEIGHT - LINE_HEIGHT);
+        g.drawString("Score", BOARD_WIDTH - 120, BOARD_HEIGHT - 2 * LINE_HEIGHT + 11);
+        g.drawString(Integer.toString(score), BOARD_WIDTH - 100, BOARD_HEIGHT - LINE_HEIGHT + 11); // Maintained the same difference
 
         // Draw a horizontal line at the bottom of the catching bar
-//        g.fillRect(barX, barY + BAR_HEIGHT, BAR_WIDTH, 2);
+        // g.fillRect(barX, barY + BAR_HEIGHT, BAR_WIDTH, 2);
 
         // Draw a horizontal line at the top of the scores
-//        g.fillRect(0, BOARD_HEIGHT - 3 * LINE_HEIGHT, BOARD_WIDTH, 2);
-        // Draw a horizontal line at the top of the scores
-        int linePositionY = BOARD_HEIGHT - 3 * LINE_HEIGHT - 10; // Adjust the Y position as needed
+        int linePositionY = BOARD_HEIGHT - 3 * LINE_HEIGHT - 10;
         g.fillRect(0, linePositionY, BOARD_WIDTH, 1);
     }
+
+
+
 
     private void initializeLines() {
         Random random = new Random();
