@@ -22,7 +22,6 @@ int ballY;
 int ballSpeedX = BALL_SPEED;
 int ballSpeedY = BALL_SPEED;
 
-int barX;
 int barY;
 
 int hits = 0;
@@ -48,7 +47,6 @@ void setup() {
   ballX = width / 2;
   ballY = 0;
 
-  barX = (width - BAR_WIDTH) / 2;
   barY = height - BAR_HEIGHT - 117;
 
   // Start playing the start game audio
@@ -94,7 +92,7 @@ void moveBall() {
     catchingBarPlayer.play();
   }
 
-  if (ballY + BALL_SIZE >= barY && ballX >= barX && ballX <= barX + BAR_WIDTH) {
+  if (ballY + BALL_SIZE >= barY && ballX >= mouseX && ballX <= mouseX + BAR_WIDTH) {
     // Check if the ball was below the bar in the previous move
     if (ballY - ballSpeedY < barY) {
       ballSpeedY = -ballSpeedY;
@@ -132,7 +130,7 @@ void drawBall() {
 
 void drawBar() {
   fill(0);
-  rect(barX, barY, BAR_WIDTH, BAR_HEIGHT);
+  rect(mouseX, barY, BAR_WIDTH, BAR_HEIGHT);
 }
 
 void drawStaticTexts() {
@@ -164,11 +162,7 @@ void initializeLines() {
 }
 
 void keyPressed() {
-  if (keyCode == LEFT && barX > 0) {
-    barX -= 20;
-  } else if (keyCode == RIGHT && barX < width - BAR_WIDTH) {
-    barX += 20;
-  } else if (key == 's' || key == 'S') {
+  if (key == 's' || key == 'S') {
     gameRunning = !gameRunning;
   } else if (key == 'r' || key == 'R') {
     resumeGame();
