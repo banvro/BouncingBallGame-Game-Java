@@ -6,7 +6,6 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 
-
 public class BouncingBallGame extends JFrame {
 
     private static final int BOARD_WIDTH = 500;
@@ -25,10 +24,13 @@ public class BouncingBallGame extends JFrame {
     private int barY = BOARD_HEIGHT - BAR_HEIGHT - 117; // Raised the bar position
 
     private int hits = 0;
+    private int missed = 0;
+    private int score = 0;
 
     public BouncingBallGame() {
         setTitle("Bouncing Ball Game");
         setSize(BOARD_WIDTH, BOARD_HEIGHT);
+//        setResizable(false); // Disable resizing
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         Timer timer = new Timer(20, new ActionListener() {
@@ -54,7 +56,7 @@ public class BouncingBallGame extends JFrame {
                 drawBackground(g);
                 drawBall(g);
                 drawBar(g);
-                drawHits(g);
+                drawStaticTexts(g);
             }
         });
     }
@@ -77,6 +79,7 @@ public class BouncingBallGame extends JFrame {
         if (ballY + BALL_SIZE >= barY && ballX >= barX && ballX <= barX + BAR_WIDTH) {
             ballSpeedY = -ballSpeedY;
             hits++; // Increase hits when the bar catches the ball
+            score++;
         }
 
         // Check if the ball falls off the screen
@@ -85,6 +88,7 @@ public class BouncingBallGame extends JFrame {
             ballY = 0;
             ballSpeedY = BALL_SPEED;
             hits = 0; // Reset hits when the ball falls off the screen
+            missed++; // Increment missed count when the ball falls off the screen
         }
     }
 
@@ -95,19 +99,6 @@ public class BouncingBallGame extends JFrame {
         // Draw the image in the background
         g.drawImage(getBackgroundImage(), 0, 0, BOARD_WIDTH, BOARD_HEIGHT, null);
     }
-
-//    private Image getBackgroundImage() {
-//        try {
-//            // Load the image using ImageIO for synchronous loading
-//            URL imageURL = new URL("https://i.ibb.co/hLbrgbf/images-jpeg.jpg");
-//            BufferedImage bufferedImage = ImageIO.read(imageURL);
-//
-//            return bufferedImage;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
 
     private Image getBackgroundImage() {
         try {
@@ -130,9 +121,22 @@ public class BouncingBallGame extends JFrame {
         g.fillRect(barX, barY, BAR_WIDTH, BAR_HEIGHT);
     }
 
-    private void drawHits(Graphics g) {
+
+    private void drawStaticTexts(Graphics g) {
+        g.setColor(Color.BLUE);
+        Font missedFont = new Font("Arial", Font.BOLD, 20);
+        g.setFont(missedFont);
+        g.drawString("Missed: " + missed, 20, BOARD_HEIGHT - 60);
+
+        g.setColor(Color.RED);
+        Font hitsFont = new Font("Arial", Font.BOLD, 20);
+        g.setFont(hitsFont);
+        g.drawString("Hits: " + hits, BOARD_WIDTH / 2 - 40, BOARD_HEIGHT - 60);
+
         g.setColor(Color.BLACK);
-        g.drawString("Hits: " + hits, 10, 20);
+        Font scoreFont = new Font("Arial", Font.BOLD, 20);
+        g.setFont(scoreFont);
+        g.drawString("Score: " + score, BOARD_WIDTH - 120, BOARD_HEIGHT - 60);
     }
 
     private class BarKeyListener extends KeyAdapter {
