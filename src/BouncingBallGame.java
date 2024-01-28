@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class BouncingBallGame extends JFrame {
 
@@ -14,6 +17,8 @@ public class BouncingBallGame extends JFrame {
     private static final int BAR_WIDTH = 80;
     private static final int BAR_HEIGHT = 10;
     private static final int BALL_SPEED = 5;
+    private static final int LINE_HEIGHT = 30;
+    private static final int NUM_LINES = 5; // Number of lines to draw
 
     private int ballX;
     private int ballY;
@@ -26,6 +31,9 @@ public class BouncingBallGame extends JFrame {
     private int hits = 0;
     private int missed = 0;
     private int score = 0;
+
+    // List to store line positions
+    private List<Point> lines = new ArrayList<>();
 
     public BouncingBallGame() {
         setTitle("Bouncing Ball Game");
@@ -46,6 +54,9 @@ public class BouncingBallGame extends JFrame {
 
         setSize(BOARD_WIDTH, BOARD_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // Initialize lines with random positions
+        initializeLines();
 
         Timer timer = new Timer(20, new ActionListener() {
             @Override
@@ -120,20 +131,38 @@ public class BouncingBallGame extends JFrame {
 
     private void drawStaticTexts(Graphics g) {
         g.setColor(Color.BLUE);
-        Font font = new Font("Arial", Font.BOLD, 20);
+        Font font = new Font("Calibri", Font.TRUETYPE_FONT, 30);
         g.setFont(font);
 
         // Display each statistic on a new line
-        g.drawString("Missed", 20, BOARD_HEIGHT - 60);
-        g.drawString(Integer.toString(missed), 20, BOARD_HEIGHT - 40);
+        g.drawString("Missed", 20, BOARD_HEIGHT - 2 * LINE_HEIGHT);
+        g.drawString(Integer.toString(missed), 50, BOARD_HEIGHT - LINE_HEIGHT);
 
         g.setColor(Color.RED);
-        g.drawString("Hits", BOARD_WIDTH / 2 - 40, BOARD_HEIGHT - 60);
-        g.drawString(Integer.toString(hits), BOARD_WIDTH / 2 - 40, BOARD_HEIGHT - 40);
+        g.drawString("Hits", BOARD_WIDTH / 2 - 40, BOARD_HEIGHT - 2 * LINE_HEIGHT);
+        g.drawString(Integer.toString(hits), BOARD_WIDTH / 2 - 25, BOARD_HEIGHT - LINE_HEIGHT);
 
         g.setColor(Color.BLACK);
-        g.drawString("Score", BOARD_WIDTH - 120, BOARD_HEIGHT - 60);
-        g.drawString(Integer.toString(score), BOARD_WIDTH - 120, BOARD_HEIGHT - 40);
+        g.drawString("Score", BOARD_WIDTH - 120, BOARD_HEIGHT - 2 * LINE_HEIGHT);
+        g.drawString(Integer.toString(score), BOARD_WIDTH - 100, BOARD_HEIGHT - LINE_HEIGHT);
+
+        // Draw a horizontal line at the bottom of the catching bar
+//        g.fillRect(barX, barY + BAR_HEIGHT, BAR_WIDTH, 2);
+
+        // Draw a horizontal line at the top of the scores
+//        g.fillRect(0, BOARD_HEIGHT - 3 * LINE_HEIGHT, BOARD_WIDTH, 2);
+        // Draw a horizontal line at the top of the scores
+        int linePositionY = BOARD_HEIGHT - 3 * LINE_HEIGHT - 10; // Adjust the Y position as needed
+        g.fillRect(0, linePositionY, BOARD_WIDTH, 1);
+    }
+
+    private void initializeLines() {
+        Random random = new Random();
+        for (int i = 0; i < NUM_LINES; i++) {
+            int x = random.nextInt(BOARD_WIDTH - 2);
+            int y = random.nextInt(BOARD_HEIGHT - LINE_HEIGHT);
+            lines.add(new Point(x, y));
+        }
     }
 
     private class BarKeyListener extends KeyAdapter {
