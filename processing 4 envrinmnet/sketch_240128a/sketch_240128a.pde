@@ -1,4 +1,8 @@
-import java.util.ArrayList;
+import ddf.minim.*;
+
+Minim minim;
+AudioPlayer startGamePlayer;
+AudioPlayer catchingBarPlayer;
 
 PImage backgroundImage;
 ArrayList<Point> lines = new ArrayList<Point>();
@@ -29,11 +33,13 @@ boolean gameRunning = true;
 void setup() {
   size(500, 700);
   surface.setTitle("ProgrammingProject");
-
-  // Allow the frame to be resizable
-  surface.setResizable(true);
+  surface.setResizable(false);
 
   backgroundImage = loadImage("images/background.jpg");
+
+  minim = new Minim(this);
+  startGamePlayer = minim.loadFile("audios/start-game.mpeg");
+  catchingBarPlayer = minim.loadFile("audios/catching-bar.mpeg");
 
   initializeLines();
 
@@ -42,6 +48,9 @@ void setup() {
 
   barX = (width - BAR_WIDTH) / 2;
   barY = height - BAR_HEIGHT - 117;
+
+  // Start playing the start game audio
+  startGamePlayer.play();
 }
 
 void draw() {
@@ -54,6 +63,12 @@ void draw() {
 
   if (gameRunning) {
     moveBall();
+  }
+  
+  if (!startGamePlayer.isPlaying() && startGamePlayer.isLooping()) {
+    // Resume playing the start game audio if it's not playing and is set to loop
+    startGamePlayer.rewind();
+    startGamePlayer.play();
   }
 }
 
@@ -75,6 +90,10 @@ void moveBall() {
       ballSpeedY = -ballSpeedY;
       hits++;
       score = hits - missed;
+
+      // Play the catching bar audio when the ball hits the bar
+      catchingBarPlayer.rewind();
+      catchingBarPlayer.play();
     }
   }
 
@@ -145,6 +164,14 @@ void resumeGame() {
   if (!gameRunning) {
     gameRunning = true;
   }
+}
+
+void stop() {
+  // Stop the audio when the sketch is stopped
+  startGamePlayer.close();
+  catchingBarPlayer.close();
+  minim.stop();
+  super.stop();
 }
 
 class Point {
