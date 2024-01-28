@@ -22,6 +22,7 @@ int ballY;
 int ballSpeedX = BALL_SPEED;
 int ballSpeedY = BALL_SPEED;
 
+int barX;
 int barY;
 
 int hits = 0;
@@ -29,6 +30,7 @@ int missed = 0;
 int score = 0;
 
 boolean gameRunning = true;
+boolean isDragging = false;
 
 void setup() {
   size(500, 700);
@@ -47,6 +49,7 @@ void setup() {
   ballX = width / 2;
   ballY = 0;
 
+  barX = (width - BAR_WIDTH) / 2;
   barY = height - BAR_HEIGHT - 117;
 
   // Start playing the start game audio
@@ -63,6 +66,11 @@ void draw() {
 
   if (gameRunning) {
     moveBall();
+  }
+
+  if (isDragging) {
+    // Update bar position based on mouse X when dragging
+    barX = constrain(mouseX - BAR_WIDTH / 2, 0, width - BAR_WIDTH);
   }
 
   if (!startGamePlayer.isPlaying() && startGamePlayer.isLooping()) {
@@ -92,7 +100,7 @@ void moveBall() {
     catchingBarPlayer.play();
   }
 
-  if (ballY + BALL_SIZE >= barY && ballX >= mouseX && ballX <= mouseX + BAR_WIDTH) {
+  if (ballY + BALL_SIZE >= barY && ballX >= barX && ballX <= barX + BAR_WIDTH) {
     // Check if the ball was below the bar in the previous move
     if (ballY - ballSpeedY < barY) {
       ballSpeedY = -ballSpeedY;
@@ -130,7 +138,7 @@ void drawBall() {
 
 void drawBar() {
   fill(0);
-  rect(mouseX, barY, BAR_WIDTH, BAR_HEIGHT);
+  rect(barX, barY, BAR_WIDTH, BAR_HEIGHT);
 }
 
 void drawStaticTexts() {
@@ -159,6 +167,19 @@ void initializeLines() {
     int y = (int) random(height - LINE_HEIGHT);
     lines.add(new Point(x, y));
   }
+}
+
+void mousePressed() {
+  if (mouseButton == LEFT) {
+    // Check if the mouse is pressed within the catching bar area
+    if (mouseX >= barX && mouseX <= barX + BAR_WIDTH && mouseY >= barY && mouseY <= barY + BAR_HEIGHT) {
+      isDragging = true;
+    }
+  }
+}
+
+void mouseReleased() {
+  isDragging = false;
 }
 
 void keyPressed() {
