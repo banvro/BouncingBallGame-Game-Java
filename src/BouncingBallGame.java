@@ -18,7 +18,7 @@ public class BouncingBallGame extends JFrame {
     private static final int BAR_HEIGHT = 10;
     private static final int BALL_SPEED = 5;
     private static final int LINE_HEIGHT = 30;
-    private static final int NUM_LINES = 5; // Number of lines to draw
+    private static final int NUM_LINES = 5;
 
     private int ballX;
     private int ballY;
@@ -26,19 +26,28 @@ public class BouncingBallGame extends JFrame {
     private int ballSpeedY = BALL_SPEED;
 
     private int barX = (BOARD_WIDTH - BAR_WIDTH) / 2;
-    private int barY = BOARD_HEIGHT - BAR_HEIGHT - 117; // Raised the bar position
+    private int barY = BOARD_HEIGHT - BAR_HEIGHT - 117;
 
     private int hits = 0;
     private int missed = 0;
     private int score = 0;
 
-    // List to store line positions
     private List<Point> lines = new ArrayList<>();
+
+    private boolean gameRunning = true;
+
+    private int savedBallX;
+    private int savedBallY;
+    private int savedBallSpeedY;
+    private int savedBarX;
+    private int savedBarY;
+    private int savedHits;
+    private int savedMissed;
+    private int savedScore;
 
     public BouncingBallGame() {
         setTitle("ProgrammingProject");
 
-        // Set the preferred size of the content pane
         JPanel contentPane = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -55,14 +64,18 @@ public class BouncingBallGame extends JFrame {
         setSize(BOARD_WIDTH, BOARD_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Initialize lines with random positions
+        // Allow the frame to be resizable
+        setResizable(false);
+
         initializeLines();
 
         Timer timer = new Timer(20, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                moveBall();
-                repaint();
+                if (gameRunning) {
+                    moveBall();
+                    repaint();
+                }
             }
         });
         timer.start();
@@ -72,6 +85,16 @@ public class BouncingBallGame extends JFrame {
 
         ballX = BOARD_WIDTH / 2;
         ballY = 0;
+
+        // Store the initial state
+        savedBallX = ballX;
+        savedBallY = ballY;
+        savedBallSpeedY = ballSpeedY;
+        savedBarX = barX;
+        savedBarY = barY;
+        savedHits = hits;
+        savedMissed = missed;
+        savedScore = score;
     }
 
     private void moveBall() {
@@ -87,19 +110,23 @@ public class BouncingBallGame extends JFrame {
         }
 
         if (ballY + BALL_SIZE >= barY && ballX >= barX && ballX <= barX + BAR_WIDTH) {
-            ballSpeedY = -ballSpeedY;
-            hits++;
-            score++;
+            // Check if the ball was below the bar in the previous move
+            if (ballY - ballSpeedY < barY) {
+                ballSpeedY = -ballSpeedY;
+                hits++;
+                score = hits - missed;
+            }
         }
 
         if (ballY >= BOARD_HEIGHT) {
             ballX = BOARD_WIDTH / 2;
             ballY = 0;
             ballSpeedY = BALL_SPEED;
-            hits = 0;
             missed++;
+            score = hits - missed;
         }
     }
+
 
     private void drawBackground(Graphics g) {
         g.setColor(Color.WHITE);
@@ -111,7 +138,7 @@ public class BouncingBallGame extends JFrame {
 
     private Image getBackgroundImage() {
         try {
-            BufferedImage bufferedImage = ImageIO.read(new File("images.jpg"));
+            BufferedImage bufferedImage = ImageIO.read(new File("images/background.jpg"));
             return bufferedImage;
         } catch (IOException e) {
             e.printStackTrace();
@@ -134,28 +161,20 @@ public class BouncingBallGame extends JFrame {
         Font font = new Font("sans-serif", Font.TRUETYPE_FONT, 23);
         g.setFont(font);
 
-        // Display each statistic on a new line
         g.drawString("Missed", 48, BOARD_HEIGHT - 2 * LINE_HEIGHT + 11);
-        g.drawString(Integer.toString(missed), 70, BOARD_HEIGHT - LINE_HEIGHT + 11); // Maintained the same difference
+        g.drawString(Integer.toString(missed), 70, BOARD_HEIGHT - LINE_HEIGHT + 11);
 
         g.setColor(Color.RED);
         g.drawString("Hits", BOARD_WIDTH / 2 - 40, BOARD_HEIGHT - 2 * LINE_HEIGHT + 11);
-        g.drawString(Integer.toString(hits), BOARD_WIDTH / 2 - 25, BOARD_HEIGHT - LINE_HEIGHT + 11); // Maintained the same difference
+        g.drawString(Integer.toString(hits), BOARD_WIDTH / 2 - 25, BOARD_HEIGHT - LINE_HEIGHT + 11);
 
         g.setColor(Color.BLACK);
         g.drawString("Score", BOARD_WIDTH - 120, BOARD_HEIGHT - 2 * LINE_HEIGHT + 11);
-        g.drawString(Integer.toString(score), BOARD_WIDTH - 100, BOARD_HEIGHT - LINE_HEIGHT + 11); // Maintained the same difference
+        g.drawString(Integer.toString(score), BOARD_WIDTH - 100, BOARD_HEIGHT - LINE_HEIGHT + 11);
 
-        // Draw a horizontal line at the bottom of the catching bar
-        // g.fillRect(barX, barY + BAR_HEIGHT, BAR_WIDTH, 2);
-
-        // Draw a horizontal line at the top of the scores
         int linePositionY = BOARD_HEIGHT - 3 * LINE_HEIGHT - 10;
         g.fillRect(0, linePositionY, BOARD_WIDTH, 1);
     }
-
-
-
 
     private void initializeLines() {
         Random random = new Random();
@@ -174,9 +193,21 @@ public class BouncingBallGame extends JFrame {
                 barX -= 20;
             } else if (key == KeyEvent.VK_RIGHT && barX < BOARD_WIDTH - BAR_WIDTH) {
                 barX += 20;
+            } else if (key == KeyEvent.VK_S) {
+                if (gameRunning) {
+                    gameRunning = false;
+                }
+            } else if (key == KeyEvent.VK_R) {
+                resumeGame();
             }
 
             requestFocusInWindow();
+        }
+    }
+
+    private void resumeGame() {
+        if (!gameRunning) {
+            gameRunning = true;
         }
     }
 
@@ -185,7 +216,7 @@ public class BouncingBallGame extends JFrame {
             @Override
             public void run() {
                 BouncingBallGame game = new BouncingBallGame();
-                game.pack();  // Pack the frame to ensure the preferred size is respected
+                game.pack();
                 game.setVisible(true);
             }
         });
