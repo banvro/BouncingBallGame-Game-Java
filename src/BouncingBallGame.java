@@ -29,8 +29,22 @@ public class BouncingBallGame extends JFrame {
 
     public BouncingBallGame() {
         setTitle("Bouncing Ball Game");
+
+        // Set the preferred size of the content pane
+        JPanel contentPane = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                drawBackground(g);
+                drawBall(g);
+                drawBar(g);
+                drawStaticTexts(g);
+            }
+        };
+        contentPane.setPreferredSize(new Dimension(BOARD_WIDTH, BOARD_HEIGHT));
+        setContentPane(contentPane);
+
         setSize(BOARD_WIDTH, BOARD_HEIGHT);
-//        setResizable(false); // Disable resizing
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         Timer timer = new Timer(20, new ActionListener() {
@@ -45,64 +59,47 @@ public class BouncingBallGame extends JFrame {
         setFocusable(true);
         addKeyListener(new BarKeyListener());
 
-        // Initialize the ball position
         ballX = BOARD_WIDTH / 2;
         ballY = 0;
-
-        setContentPane(new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                drawBackground(g);
-                drawBall(g);
-                drawBar(g);
-                drawStaticTexts(g);
-            }
-        });
     }
 
     private void moveBall() {
         ballX += ballSpeedX;
         ballY += ballSpeedY;
 
-        // Bounce off the walls
         if (ballX <= 0 || ballX >= BOARD_WIDTH - BALL_SIZE) {
             ballSpeedX = -ballSpeedX;
         }
 
-        // Bounce off the top
         if (ballY <= 0) {
             ballSpeedY = -ballSpeedY;
         }
 
-        // Check if the ball hits the bar
         if (ballY + BALL_SIZE >= barY && ballX >= barX && ballX <= barX + BAR_WIDTH) {
             ballSpeedY = -ballSpeedY;
-            hits++; // Increase hits when the bar catches the ball
+            hits++;
             score++;
         }
 
-        // Check if the ball falls off the screen
         if (ballY >= BOARD_HEIGHT) {
             ballX = BOARD_WIDTH / 2;
             ballY = 0;
             ballSpeedY = BALL_SPEED;
-            hits = 0; // Reset hits when the ball falls off the screen
-            missed++; // Increment missed count when the ball falls off the screen
+            hits = 0;
+            missed++;
         }
     }
 
     private void drawBackground(Graphics g) {
-        g.setColor(Color.WHITE); // Set background color
+        g.setColor(Color.WHITE);
         g.fillRect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
 
-        // Draw the image in the background
-        g.drawImage(getBackgroundImage(), 0, 0, BOARD_WIDTH, BOARD_HEIGHT, null);
+        Image backgroundImage = getBackgroundImage().getScaledInstance(BOARD_WIDTH, BOARD_HEIGHT, Image.SCALE_SMOOTH);
+        g.drawImage(backgroundImage, 0, 0, this);
     }
 
     private Image getBackgroundImage() {
         try {
-            // Load the image using ImageIO for synchronous loading
             BufferedImage bufferedImage = ImageIO.read(new File("images.jpg"));
             return bufferedImage;
         } catch (IOException e) {
@@ -121,22 +118,22 @@ public class BouncingBallGame extends JFrame {
         g.fillRect(barX, barY, BAR_WIDTH, BAR_HEIGHT);
     }
 
-
     private void drawStaticTexts(Graphics g) {
         g.setColor(Color.BLUE);
-        Font missedFont = new Font("Arial", Font.BOLD, 20);
-        g.setFont(missedFont);
-        g.drawString("Missed: " + missed, 20, BOARD_HEIGHT - 60);
+        Font font = new Font("Arial", Font.BOLD, 20);
+        g.setFont(font);
+
+        // Display each statistic on a new line
+        g.drawString("Missed", 20, BOARD_HEIGHT - 60);
+        g.drawString(Integer.toString(missed), 20, BOARD_HEIGHT - 40);
 
         g.setColor(Color.RED);
-        Font hitsFont = new Font("Arial", Font.BOLD, 20);
-        g.setFont(hitsFont);
-        g.drawString("Hits: " + hits, BOARD_WIDTH / 2 - 40, BOARD_HEIGHT - 60);
+        g.drawString("Hits", BOARD_WIDTH / 2 - 40, BOARD_HEIGHT - 60);
+        g.drawString(Integer.toString(hits), BOARD_WIDTH / 2 - 40, BOARD_HEIGHT - 40);
 
         g.setColor(Color.BLACK);
-        Font scoreFont = new Font("Arial", Font.BOLD, 20);
-        g.setFont(scoreFont);
-        g.drawString("Score: " + score, BOARD_WIDTH - 120, BOARD_HEIGHT - 60);
+        g.drawString("Score", BOARD_WIDTH - 120, BOARD_HEIGHT - 60);
+        g.drawString(Integer.toString(score), BOARD_WIDTH - 120, BOARD_HEIGHT - 40);
     }
 
     private class BarKeyListener extends KeyAdapter {
@@ -149,7 +146,6 @@ public class BouncingBallGame extends JFrame {
                 barX += 20;
             }
 
-            // Ensure the JFrame has focus
             requestFocusInWindow();
         }
     }
@@ -158,7 +154,9 @@ public class BouncingBallGame extends JFrame {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new BouncingBallGame().setVisible(true);
+                BouncingBallGame game = new BouncingBallGame();
+                game.pack();  // Pack the frame to ensure the preferred size is respected
+                game.setVisible(true);
             }
         });
     }
